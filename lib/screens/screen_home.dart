@@ -14,7 +14,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Map<String, String>> cards = [];
 
-  // Método para cargar los personajes desde SharedPreferences
   Future<void> _loadCharacters() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? charactersJson = prefs.getString('characters');
@@ -26,18 +25,16 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Método para guardar los personajes en SharedPreferences
   Future<void> _saveCharacters() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String charactersJson = json.encode(cards);
     prefs.setString('characters', charactersJson);
   }
 
-  // Método para eliminar un personaje
   void _deleteCharacter(int index) {
     setState(() {
-      cards.removeAt(index);  // Eliminar el personaje de la lista
-      _saveCharacters();  // Guardar los cambios en SharedPreferences
+      cards.removeAt(index);  
+      _saveCharacters();  
     });
   }
 
@@ -64,7 +61,7 @@ class _HomePageState extends State<HomePage> {
               ),
               TextField(
                 controller: _imageController,
-                decoration: const InputDecoration(labelText: "URL de la Imagen"),
+                decoration: const InputDecoration(labelText: "URL de la Imagen en terminacion .png o .jpg"),
               ),
             ],
           ),
@@ -86,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                       "title": _titleController.text,
                       "description": _descriptionController.text,
                     });
-                    _saveCharacters();  // Guardar después de agregar un personaje
+                    _saveCharacters();  
                   });
                   Navigator.pop(context);
                 }
@@ -102,7 +99,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _loadCharacters(); // Cargar personajes cuando la app se inicia
+    _loadCharacters(); 
   }
 
   @override
@@ -167,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
                     },
-                    onDelete: () => _deleteCharacter(index), // Pasamos el callback de eliminación
+                    onDelete: () => _deleteCharacter(index), 
                   );
                 },
               ),

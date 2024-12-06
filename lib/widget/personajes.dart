@@ -4,14 +4,14 @@ class PersonajesCard extends StatefulWidget {
   final String image;
   final String title;
   final VoidCallback onTap;
-  final VoidCallback onDelete;  // Nuevo callback para eliminar
+  final VoidCallback onDelete;  
 
   const PersonajesCard({
     super.key,
     required this.image,
     required this.title,
     required this.onTap,
-    required this.onDelete,  // Recibimos el callback de eliminación
+    required this.onDelete,  
   });
 
   @override
@@ -87,7 +87,7 @@ class _PersonajesState extends State<PersonajesCard> with SingleTickerProviderSt
                   ),
                   IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: widget.onDelete,  // Llamamos al callback de eliminación
+                    onPressed: widget.onDelete,  
                   ),
                 ],
               ),
