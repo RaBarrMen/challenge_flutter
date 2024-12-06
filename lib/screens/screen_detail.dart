@@ -63,10 +63,10 @@ class DetailsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 20, bottom: 20),
                     child: Hero(
-                      tag: image,
+                      tag: image, 
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.asset(
+                        child: Image.network(
                           image,
                           width: 300,
                           height: 300,

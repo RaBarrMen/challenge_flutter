@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 
-class    PersonajesCard extends StatefulWidget {
+class PersonajesCard extends StatefulWidget {
   final String image;
   final String title;
   final VoidCallback onTap;
+  final VoidCallback onDelete;  // Nuevo callback para eliminar
 
   const PersonajesCard({
     super.key,
     required this.image,
     required this.title,
     required this.onTap,
+    required this.onDelete,  // Recibimos el callback de eliminación
   });
 
   @override
   State<PersonajesCard> createState() => _PersonajesState();
 }
 
-class _PersonajesState extends State<PersonajesCard>
-    with SingleTickerProviderStateMixin {
+class _PersonajesState extends State<PersonajesCard> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
 
   @override
   void initState() {
@@ -29,6 +32,9 @@ class _PersonajesState extends State<PersonajesCard>
       lowerBound: 0.9,
       upperBound: 1.0,
     );
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _opacityAnimation = Tween<double>(begin: 1.0, end: 0.7).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -41,44 +47,50 @@ class _PersonajesState extends State<PersonajesCard>
       child: Hero(
         tag: widget.image,
         child: ScaleTransition(
-          scale: _controller,
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 20),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    widget.image,
-                    width: 80,
-                    height: 120,
-                    fit: BoxFit.cover,
+          scale: _scaleAnimation,
+          child: FadeTransition(
+            opacity: _opacityAnimation,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    widget.title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                ],
+              ),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      widget.image, 
+                      width: 80,
+                      height: 120,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                ),
-                const Icon(Icons.chevron_right, color: Colors.grey),
-              ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: widget.onDelete,  // Llamamos al callback de eliminación
+                  ),
+                ],
+              ),
             ),
           ),
         ),

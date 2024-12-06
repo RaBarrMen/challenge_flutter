@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widget/personajes.dart';
 import 'screen_detail.dart';
+import 'dart:convert';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,38 +12,98 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Map<String, String>> cards = [
-    {
-      "image": "lib/imagenes/DK.jpg",
-      "title": "Donkey Kong",
-      "description":
-          ""
-    },
-    {
-      "image": "lib/imagenes/link.png",
-      "title": "Link",
-      "description":
-          ""
-    },
-    {
-      "image": "lib/imagenes/luigi.jpg",
-      "title": "Luigi",
-      "description":
-          ""
-    },
-    {
-      "image": "lib/imagenes/mario.jpeg",
-      "title": "Mario",
-      "description":
-          ""
-    },
-    {
-      "image": "lib/imagenes/toad.jpeg",
-      "title": "Toad",
-      "description":
-          ""
-    },
-  ];
+  List<Map<String, String>> cards = [];
+
+  // Método para cargar los personajes desde SharedPreferences
+  Future<void> _loadCharacters() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? charactersJson = prefs.getString('characters');
+    if (charactersJson != null) {
+      List<dynamic> decodedData = json.decode(charactersJson);
+      setState(() {
+        cards = List<Map<String, String>>.from(decodedData.map((item) => Map<String, String>.from(item)));
+      });
+    }
+  }
+
+  // Método para guardar los personajes en SharedPreferences
+  Future<void> _saveCharacters() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String charactersJson = json.encode(cards);
+    prefs.setString('characters', charactersJson);
+  }
+
+  // Método para eliminar un personaje
+  void _deleteCharacter(int index) {
+    setState(() {
+      cards.removeAt(index);  // Eliminar el personaje de la lista
+      _saveCharacters();  // Guardar los cambios en SharedPreferences
+    });
+  }
+
+  void _showAddCharacterDialog() {
+    final TextEditingController _titleController = TextEditingController();
+    final TextEditingController _descriptionController = TextEditingController();
+    final TextEditingController _imageController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Agregar Personaje"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: "Nombre"),
+              ),
+              TextField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(labelText: "Descripción"),
+              ),
+              TextField(
+                controller: _imageController,
+                decoration: const InputDecoration(labelText: "URL de la Imagen"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () {
+                if (_titleController.text.isNotEmpty &&
+                    _descriptionController.text.isNotEmpty &&
+                    _imageController.text.isNotEmpty) {
+                  setState(() {
+                    cards.add({
+                      "image": _imageController.text,
+                      "title": _titleController.text,
+                      "description": _descriptionController.text,
+                    });
+                    _saveCharacters();  // Guardar después de agregar un personaje
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text("Agregar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCharacters(); // Cargar personajes cuando la app se inicia
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +167,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
                     },
+                    onDelete: () => _deleteCharacter(index), // Pasamos el callback de eliminación
                   );
                 },
               ),
@@ -114,13 +177,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.purple,
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(""),
-            ),
-          );
-        },
+        onPressed: _showAddCharacterDialog,
         child: const Icon(Icons.add),
       ),
     );
