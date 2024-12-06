@@ -1,0 +1,27 @@
+name: challenge
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  assets:
+    - lib/imagenes/DK.jpg
+    - lib/imagenes/link.png
+    - lib/imagenes/luigi.jpg
+    - lib/imagenes/mario.jpeg
+    - lib/imagenes/toad.jpeg
+
+  uses-material-design: true
